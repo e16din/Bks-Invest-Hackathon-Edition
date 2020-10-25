@@ -81,16 +81,17 @@ class StockWidget extends StatelessWidget {
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
-                    width: 180,
+                    width: 220,
                     height: 48,
                     child: RaisedButton(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6.0)),
                       onPressed: () {
-                        _onBuyPressed(context);
+                        _onBuyPressed(context, stock);
                       },
-                      child:
-                          const Text('Купить', style: TextStyle(fontSize: 20)),
+                      child: Text("Купить за\n${stock.price}${stock.sign}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20)),
                       color: Colors.blue,
                       textColor: Colors.white,
                       elevation: 5,
@@ -101,16 +102,15 @@ class StockWidget extends StatelessWidget {
     );
   }
 
-  _onBuyPressed(BuildContext context) async {
+  _onBuyPressed(BuildContext context, Stock stock) async {
     var sharedPreferences = await SharedPreferences.getInstance();
 
-    var coinsCount = sharedPreferences.getInt(
-      KeyCoinsCount,
-    );
-    if (coinsCount >= 300) {
-      var stockVirtualPrice = 300;
-      sharedPreferences.setInt(KeyCoinsCount, coinsCount - stockVirtualPrice);
-
+    // var coinsCount = sharedPreferences.getInt(
+    //   KeyCoinsCount,
+    // );
+    if (coinsCount >= stock.price) {
+      // sharedPreferences.setInt(KeyCoinsCount, coinsCount - stock.price);
+      coinsCount -= stock.price;
       var myStocksJson = sharedPreferences.getString(KeyMyStocks);
 
       List<Stock> myStocks = List();
@@ -122,7 +122,6 @@ class StockWidget extends StatelessWidget {
       sharedPreferences.setString(KeyMyStocks, jsonEncode(myStocks));
 
       showOkAlertDialog(context, "Поздравляем, покупка прошла успешно!");
-
     } else {
       // set up the buttons
       Widget cancelButton = FlatButton(
@@ -143,7 +142,8 @@ class StockWidget extends StatelessWidget {
       // set up the AlertDialog
       AlertDialog alert = AlertDialog(
         title: Text("БКС Инвестиции"),
-        content: Text("Недостаточно БКС-монет для покупки, необходимо пополнить баланс."),
+        content: Text(
+            "Недостаточно БКС-монет для покупки, необходимо пополнить баланс."),
         actions: [
           cancelButton,
           continueButton,

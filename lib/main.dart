@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-import '../data/stock_data.dart';
-import 'my_stocks_page.dart';
-import 'stock_page.dart';
+import 'data/stock_data.dart';
+import 'pages/my_stocks_page.dart';
+import 'pages/stock_page.dart';
 
 void main() {
   runApp(MainApp());
@@ -15,7 +15,7 @@ void main() {
 
 const PrimaryColor = const Color(0xFF1473EF);
 
-int coinsCount;
+List<Stock> tempMyStocks = List();
 
 class MainApp extends StatefulWidget {
   @override
@@ -35,7 +35,9 @@ class _MainAppState extends State<MainApp> {
         "Сбербанк России — крупнейший российский финансовый конгломерат. Предлагает весь спектр инвестиционно-банковских услуг: корпоративные и розничные кредиты, депозиты, пенсионное страхование, обмен валют, дебетовые и кредитные карты, лизинг, электронные аукционы и др. Имеет представительства во многих странах мира, включая США, Великобританию, а также страны СНГ и Восточной Европы. Контролируется Центральным банком РФ.",
         10.65,
         255.60,
-        0xFFE53935),
+        0xFFE53935,
+        "₽",
+        2145),
     Stock(
         'Tesla',
         'TSLA',
@@ -44,7 +46,9 @@ class _MainAppState extends State<MainApp> {
         "Tesla Inc. — американская компания, производитель электрокаров и компонентов силовых агрегатов. Компания владеет собственной сетью продаж и техобслуживания, поставляет компоненты другим автопроизводителям. Tesla Inc. основана в 2003 году, презентация первого автомобиля компании — Tesla Roadster — состоялась в 2006 году.",
         543.15,
         355.71,
-        0xFF388E3C),
+        0xFF388E3C,
+        "\$",
+        421.20),
     Stock(
         'Газпром',
         'GAZP',
@@ -53,7 +57,9 @@ class _MainAppState extends State<MainApp> {
         "«Газпром» — многопрофильная энергетическая корпорация с государственным участием. Основные направления деятельности — геологическая разведка углеводородных и нефтяных месторождений; добыча, переработка, хранение и транспортировка газа и нефти; генерация и сбыт тепловой энергии и электроэнергии. Один из ключевых игроков на глобальном энергетическом рынке. «Газпрому» принадлежит крупнейшая в мире система транспортировки газа, а также предприятия по разработке газовой и нефтехимической продукции.",
         33.24,
         821.50,
-        0xFFE53935),
+        0xFFE53935,
+        "\$",
+        1649.60),
     Stock(
         'Apple',
         'AAPL',
@@ -62,7 +68,9 @@ class _MainAppState extends State<MainApp> {
         "Apple Inc. — американский производитель персональных и планшетных компьтеров, смартфонов и программного обеспечения. Компания продает свою продукцию через сеть розничных магазинов Apple Store, а также в официальном интернет-магазине и через других ритейлеров. Первая американская компания, чья капитализация превысила 1 триллион долларов США.",
         86.49,
         53.40,
-        0xFF388E3C),
+        0xFF388E3C,
+        "\$",
+        115.14),
     Stock(
         'ЛУКОЙЛ',
         'LKOH',
@@ -71,7 +79,9 @@ class _MainAppState extends State<MainApp> {
         "«Лукойл» — российская нефтегазовая компания. Занимается разведкой и добычей углеводородов, переработкой сырья, продажей нефти и нефтепродуктов. Компания владеет собственными нефтеперерабатывающими заводами, нефтехимическими комбинатами, заправочными станциями, значительным числом электроустановок, сетью трубопроводов, а также железнодорожным и водным транспортом. Участвует в разведке и разработке месторождений в Азербайджане, Иране, Ираке, Египте, Казахстане, Узбекистане и других странах.",
         29.65,
         1822.50,
-        0xFFE53935),
+        0xFFE53935,
+        "₽",
+        4325),
     Stock(
         'Intel',
         'INTC',
@@ -80,7 +90,9 @@ class _MainAppState extends State<MainApp> {
         "Intel производит микропроцессоры, графические процессоры, чипсеты, сетевые платы, твердотелые накопители и другие компьютерные компоненты. Также компания разрабатывает графические технологии, технологии визуализации, памяти и безопасности, технологии для центров обработки данных и сетей 5G, производит 3D-камеры RealSense™.",
         14.69,
         8.30,
-        0xFFE53935),
+        0xFFE53935,
+        "\$",
+        48.19),
     Stock(
         'Норильский никель',
         'GMKN',
@@ -89,7 +101,9 @@ class _MainAppState extends State<MainApp> {
         "«Норникель» — российская горно-металлургическая компания. Крупнейший в мире производитель никеля и палладия, один из крупнейших производителей платины и меди. Производит также кобальт, родий, серебро, золото, иридий, рутений, селен, теллур и серу. Продукция Норникеля экспортируется в более 30 стран мира.",
         15.34,
         2638,
-        0xFF388E3C),
+        0xFF388E3C,
+        "₽",
+        19838),
     Stock(
         'Amazon',
         'AMZN',
@@ -98,7 +112,9 @@ class _MainAppState extends State<MainApp> {
         "Amazon.com, Inc. — одна из первых компаний, которые начали продавать товары массового пользования в интернете. Сейчас на сайте Amazon.com продаются товары более 30 категорий, в том числе книги, бытовая электроника, детские игрушки, пищевые продукты, хозяйственные товары, спортивные товары и многое другое. Компания также производит устройства для чтения книг, компьютерные игры, товары для дома и сада и разрабатывает свои технологии: у Amazon есть платежная система и облачые технологии.",
         82.39,
         1450.39,
-        0xFF388E3C),
+        0xFF388E3C,
+        "\$",
+        3210.80),
     Stock(
         'Яндекс',
         'YNDX',
@@ -107,72 +123,60 @@ class _MainAppState extends State<MainApp> {
         "«Яндекс» — российская интернет-компания, владеющая крупнейшей в России поисковой системой и рядом других интернет-сервисов, включая онлайн-оператор такси, онлайн-кинотеатр и маркетплейсы. Работает в России, Беларуси, Казахстане и Турции. Основной доход получает от продажи рекламы. Яндекс также поддерживает крупнейшую в России сеть центров обработки и хранения данных, инвестирует в российские и зарубежные IT-компании.",
         118.81,
         2456,
-        0xFF388E3C)
+        0xFF388E3C,
+        "₽",
+        4523.20)
   ];
 
-  Future<List<Stock>> loadData() async {
-    var sharedPreferences = await SharedPreferences.getInstance();
-    coinsCount = sharedPreferences.getInt(KeyCoinsCount);
-    if (coinsCount == null) {
-      coinsCount = 1000;
-      sharedPreferences.setInt(KeyCoinsCount, 1000);
-    }
-
-    var myStocksJson = sharedPreferences.getString(KeyMyStocks);
-    var myStocks = List();
-    if (myStocksJson != null) {
-      Iterable jsonObjects = json.decode(myStocksJson);
-      myStocks = List<Stock>.from(jsonObjects.map((i) => Stock.fromJson(i)));
-    }
-
-    return myStocks;
-  }
+  // Future<bool> loadData() async {
+  //   var sharedPreferences = await SharedPreferences.getInstance();
+  //   coinsCount = sharedPreferences.getInt(KeyCoinsCount);
+  //   if (coinsCount == null) {
+  //     coinsCount = defaultCoinsCount;
+  //     sharedPreferences.setInt(KeyCoinsCount, defaultCoinsCount);
+  //   }
+  //
+  //   var myStocksJson = sharedPreferences.getString(KeyMyStocks);
+  //   var myStocks = List();
+  //   if (myStocksJson != null) {
+  //     Iterable jsonObjects = json.decode(myStocksJson);
+  //     myStocks = List<Stock>.from(jsonObjects.map((i) => Stock.fromJson(i)));
+  //   }
+  //   tempMyStocks = myStocks;
+  //   return true;
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // loadData();
     return MaterialApp(
-        home: FutureBuilder<List<Stock>>(
-      future: loadData(),
-      builder: (buildContext, snapshot) {
-        if (snapshot.hasData || (snapshot.data!=null && snapshot.data.isEmpty)) {
-          return MaterialApp(
-            title: 'Stocks App',
-            theme: ThemeData(
-              primaryColor: PrimaryColor,
+      home: Navigator(
+        pages: [
+          MaterialPage(
+            key: ValueKey('MainPage'),
+            child: StocksListWidget(
+              stocks: stocks,
+              onStockTapped: _onStockTapped,
+              onMyStocksTapped: _onMyStocksTapped,
             ),
-            home: Navigator(
-              pages: [
-                MaterialPage(
-                  key: ValueKey('MainPage'),
-                  child: StocksListWidget(
-                      stocks: stocks,
-                      onStockTapped: _onStockTapped,
-                      onMyStocksTapped: _onMyStocksTapped,
-                      myStocks: snapshot.data),
-                ),
-                if (_myStocks != null) MyStocksPage(myStocks: _myStocks),
-                if (_selectedStock != null) StockPage(stock: _selectedStock)
-              ],
-              onPopPage: (route, result) {
-                if (!route.didPop(result)) {
-                  return false;
-                }
+          ),
+          if (_myStocks != null) MyStocksPage(myStocks: _myStocks),
+          if (_selectedStock != null) StockPage(stock: _selectedStock)
+        ],
+        onPopPage: (route, result) {
+          if (!route.didPop(result)) {
+            return false;
+          }
 
-                setState(() {
-                  _selectedStock = null;
-                  _myStocks = null;
-                });
+          setState(() {
+            _selectedStock = null;
+            _myStocks = null;
+          });
 
-                return true;
-              },
-            ),
-          );
-        } else {
-          // Return loading screen while reading preferences
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    ));
+          return true;
+        },
+      ),
+    );
   }
 
   _onStockTapped(Stock stock) {
@@ -191,14 +195,13 @@ class _MainAppState extends State<MainApp> {
 class StocksListWidget extends StatelessWidget {
   final List<Stock> stocks;
   final ValueChanged<Stock> onStockTapped;
+
   final ValueChanged<List<Stock>> onMyStocksTapped;
-  final List<Stock> myStocks;
 
   StocksListWidget({
     @required this.stocks,
     @required this.onStockTapped,
     @required this.onMyStocksTapped,
-    @required this.myStocks,
   });
 
   @override
@@ -207,6 +210,7 @@ class StocksListWidget extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
+            backgroundColor: PrimaryColor,
             title: Text("Инвестиции"),
             leading: Padding(
                 padding: EdgeInsets.all(4),
@@ -229,58 +233,53 @@ class StocksListWidget extends StatelessWidget {
                         style: new TextStyle(
                             fontSize: 20.0, color: Colors.white))),
                 Padding(padding: EdgeInsets.only(top: 10.0)),
-                Visibility(
-                    visible: myStocks.length > 0,
-                    child: Container(
-                        height: 88,
-                        width: double.infinity,
-                        child: InkWell(
-                            onTap: () => onMyStocksTapped(myStocks),
-                            child: Card(
-                                child: Padding(
-                                    padding: EdgeInsets.all(8),
-                                    child: Column(children: [
-                                      Padding(
-                                          padding: EdgeInsets.only(left: 2),
-                                          child: Row(
+                // Visibility(
+                //     visible: tempMyStocks.length > 0,
+                Container(
+                    height: 88,
+                    width: double.infinity,
+                    child: InkWell(
+                        onTap: () => { onMyStocksTapped(tempMyStocks)},
+                        child: Card(
+                            child: Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Column(children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(left: 2),
+                                      child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                    "Ваши акции растут: ",
+                                                    style: new TextStyle(
+                                                        fontSize: 16.0))),
+                                            Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Align(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    child: Text(
-                                                        "Ваши акции растут: ",
-                                                        style: new TextStyle(
-                                                            fontSize: 16.0))),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                        "${calcMyPercents(myStocks)}%",
-                                                        style: new TextStyle(
-                                                            fontSize: 16.0,
-                                                            color:
-                                                                Colors.green)),
-                                                    Text(
-                                                        "${calcMyValues(myStocks)}\$",
-                                                        style: new TextStyle(
-                                                            fontSize: 16.0,
-                                                            color: Color(
-                                                                0xFF999999)))
-                                                  ],
-                                                )
-                                              ])),
-                                      Padding(
-                                          padding: EdgeInsets.only(top: 5.0)),
-                                      Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: Text("Подробнее",
-                                              style: new TextStyle(
-                                                  fontSize: 16.0,
-                                                  color: PrimaryColor)))
-                                    ])))))),
+                                                Text("${21}%",
+                                                    style: new TextStyle(
+                                                        fontSize: 16.0,
+                                                        color: Colors.green)),
+                                                Text("${1890}\$",
+                                                    style: new TextStyle(
+                                                        fontSize: 16.0,
+                                                        color:
+                                                            Color(0xFF999999)))
+                                              ],
+                                            )
+                                          ])),
+                                  Padding(padding: EdgeInsets.only(top: 5.0)),
+                                  Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Text("Подробнее",
+                                          style: new TextStyle(
+                                              fontSize: 16.0,
+                                              color: PrimaryColor)))
+                                ]))))),
                 Padding(padding: EdgeInsets.only(top: 10.0)),
                 Text("Купить акции:", style: TextStyle(color: Colors.white)),
                 Card(
@@ -314,7 +313,7 @@ class StocksListWidget extends StatelessWidget {
                                             fontSize: 16.0,
                                             color: Color(stocks[index].color))),
                                     Text(
-                                        "${stocks[index].value.toStringAsFixed(2)}\$",
+                                        "${stocks[index].value.toStringAsFixed(2)}${stocks[index].sign}",
                                         style: new TextStyle(
                                             fontSize: 16.0,
                                             color: Color(0xFF999999)))
