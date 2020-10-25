@@ -206,7 +206,7 @@ class StocksListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _helloText = "Здравствуйте, у Вас на счету\n$coinsCount БКС-монет!";
+    var _helloText = "Здравствуйте, у Вас на счету\n${coinsCount.toStringAsFixed(2)} БКС-монет!";
 
     return Scaffold(
         appBar: AppBar(
